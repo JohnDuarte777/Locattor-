@@ -1,0 +1,84 @@
+name: APK Android
+
+# Compila o app Android (APK) na nuvem.
+# - Em pull requests: só compila e anexa o APK à execução (para conferir o build).
+# - No main (ou manualmente): publica uma Release com o APK para baixar no celular:
+#   https://github.com/<dono>/<repo>/releases/latest/download/locattor.apk
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Checar tipos
+        run: npx tsc --noEmit
+
+      # O versionCode cresce a cada build para o Android aceitar a atualização.
+      - name: Definir versão
+        run: |
+          node -e '
+            const fs = require("fs");
+            const app = JSON.parse(fs.readFileSync("app.json", "utf8"));
+            app.expo.android.versionCode = Number(process.env.GITHUB_RUN_NUMBER);
+            fs.writeFileSync("app.json", JSON.stringify(app, null, 2));
+          '
+
+      - name: Gerar projeto Android
+        run: npx expo prebuild --platform android --no-install
+
+      # Release assinado com a chave de debug do template: serve para testes,
+      # não para publicar na Play Store.
+      - name: Compilar APK
+        working-directory: android
+        run: ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a --no-daemon
+
+      - name: Renomear APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk locattor.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: locattor-apk
+          path: locattor.apk
+
+      - name: Publicar Release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-build-${{ github.run_number }}
+          name: Locattor Android (build ${{ github.run_number }})
+          body: |
+            APK para testes do Locattor, gerado a partir do commit ${{ github.sha }}.
+
+            **Como instalar:** baixe `locattor.apk` abaixo no celular Android e abra o arquivo.
+            Na primeira vez, permita "instalar apps desconhecidos" para o navegador.
+          files: locattor.apk
+          make_latest: true

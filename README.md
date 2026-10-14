@@ -16,7 +16,22 @@ App para gerenciamento de imóveis de aluguel, para **Android e iOS**, feito com
 
 Por enquanto as contas e os dados ficam salvos no próprio aparelho (AsyncStorage) e funcionam offline. A estrutura já está pronta para migrar para um banco online (Supabase/PostgreSQL) — veja [docs/MIGRACAO_BANCO.md](docs/MIGRACAO_BANCO.md).
 
-## Como rodar no celular
+## Instalar no Android (sem computador)
+
+A cada atualização do `main`, o GitHub compila o app automaticamente
+(workflow `.github/workflows/android-apk.yml`) e publica o APK em **Releases**.
+
+1. No celular Android, abra
+   <https://github.com/JohnDuarte777/Locattor-/releases/latest/download/locattor.apk>
+   (ou a página **Releases** do repositório e toque em `locattor.apk`).
+2. Abra o arquivo baixado e toque em **Instalar**. Na primeira vez, o Android pede
+   para **permitir apps desconhecidos** para o navegador — autorize.
+3. Para atualizar, baixe e instale o APK novo por cima; os dados são mantidos.
+
+> APK de testes, assinado com a chave padrão de desenvolvimento. Para publicar na
+> Play Store é preciso gerar uma chave própria (ex.: com EAS Build).
+
+## Como rodar no celular (com computador)
 
 Pré-requisito: [Node.js](https://nodejs.org) 20 ou superior.
 
