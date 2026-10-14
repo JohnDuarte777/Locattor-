@@ -1,11 +1,11 @@
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { Alert, Linking, ScrollView, Text, View } from 'react-native';
 
-import { Badge, Button, Card, Empty, InfoRow, SectionTitle, styles as ui } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { formatCurrency, formatDate } from '../../lib/format';
-import { goBack } from '../../lib/navigation';
-import { callPhone, openWhatsApp } from '../../lib/whatsapp';
+import { Badge, Button, Card, Empty, InfoRow, SectionTitle, styles as ui } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { formatCurrency, formatDate } from '../../../lib/format';
+import { goBack } from '../../../lib/navigation';
+import { callPhone, openWhatsApp } from '../../../lib/whatsapp';
 
 export default function TenantDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();

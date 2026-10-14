@@ -1,12 +1,12 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 
-import { Button, Field, FormScreen, Select } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { PROPERTY_TYPES, type PropertyType } from '../../data/types';
-import { currencyInput, parseCurrency } from '../../lib/format';
-import { goBack } from '../../lib/navigation';
-import { newId } from '../../lib/rental';
+import { Button, Field, FormScreen, Select } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { PROPERTY_TYPES, type PropertyType } from '../../../data/types';
+import { currencyInput, parseCurrency } from '../../../lib/format';
+import { goBack } from '../../../lib/navigation';
+import { newId } from '../../../lib/id';
 
 export default function PropertyForm() {
   const { id } = useLocalSearchParams<{ id?: string }>();

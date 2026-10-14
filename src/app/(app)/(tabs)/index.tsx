@@ -3,12 +3,13 @@ import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { colors, spacing } from '../../components/theme';
-import { Card, Empty, SectionTitle, StatusBadge, styles as ui, type IconName } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { currentMonth, formatCurrency, formatDate, formatMonth, today } from '../../lib/format';
-import { monthSummary, overduePayments, paymentStatus } from '../../lib/rental';
-import { chargeMessage, openWhatsApp } from '../../lib/whatsapp';
+import { useAuth } from '../../../auth/AuthProvider';
+import { colors, spacing } from '../../../components/theme';
+import { Card, Empty, SectionTitle, StatusBadge, styles as ui, type IconName } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { currentMonth, formatCurrency, formatDate, formatMonth, today } from '../../../lib/format';
+import { monthSummary, overduePayments, paymentStatus } from '../../../lib/rental';
+import { chargeMessage, openWhatsApp } from '../../../lib/whatsapp';
 
 function Stat({ icon, label, value, color }: { icon: IconName; label: string; value: string; color: string }) {
   return (
@@ -23,7 +24,9 @@ function Stat({ icon, label, value, color }: { icon: IconName; label: string; va
 }
 
 export default function Dashboard() {
-  const { data } = useStore();
+  const { data, error } = useStore();
+  const { user } = useAuth();
+  const firstName = user?.name.split(' ')[0];
   const month = currentMonth();
   const todayISO = today();
 
@@ -56,7 +59,7 @@ export default function Dashboard() {
       <ScrollView style={ui.screen} contentContainerStyle={ui.content}>
         <Empty
           icon="business-outline"
-          title="Bem-vindo ao Locattor!"
+          title={`Bem-vindo ao Locattor${firstName ? `, ${firstName}` : ''}!`}
           subtitle="Comece cadastrando seus imóveis e inquilinos. Depois crie um contrato e as cobranças mensais serão geradas automaticamente."
         />
         <Card onPress={() => router.push('/imovel/form')} style={s.cta}>
@@ -69,6 +72,12 @@ export default function Dashboard() {
 
   return (
     <ScrollView style={ui.screen} contentContainerStyle={ui.content}>
+      {error ? (
+        <Card style={s.errorCard}>
+          <Text style={{ color: colors.danger }}>{error}</Text>
+        </Card>
+      ) : null}
+      {firstName ? <Text style={ui.muted}>Olá, {firstName}!</Text> : null}
       <Text style={s.month}>{formatMonth(month)}</Text>
       <View style={s.grid}>
         <Stat icon="trending-up" label="Previsto no mês" value={formatCurrency(summary.expected)} color={colors.primary} />
@@ -156,5 +165,6 @@ const s = StyleSheet.create({
   bar: { height: 8, borderRadius: 4, backgroundColor: colors.border, overflow: 'hidden', marginVertical: spacing.xs },
   barFill: { height: 8, backgroundColor: colors.primary },
   link: { color: colors.success, fontWeight: '600', marginTop: spacing.xs },
+  errorCard: { backgroundColor: colors.dangerLight, borderColor: colors.danger },
   cta: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
 });

@@ -3,13 +3,13 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { PaymentCard } from '../../components/PaymentCard';
-import { colors, spacing } from '../../components/theme';
-import { Card, Empty, Fab, Select, styles as ui } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { EXPENSE_CATEGORIES } from '../../data/types';
-import { addMonths, currentMonth, formatCurrency, formatDate, formatMonth, today } from '../../lib/format';
-import { monthSummary } from '../../lib/rental';
+import { PaymentCard } from '../../../components/PaymentCard';
+import { colors, spacing } from '../../../components/theme';
+import { Card, Empty, Fab, Select, styles as ui } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { EXPENSE_CATEGORIES } from '../../../data/types';
+import { addMonths, currentMonth, formatCurrency, formatDate, formatMonth, today } from '../../../lib/format';
+import { monthSummary } from '../../../lib/rental';
 
 type Tab = 'alugueis' | 'despesas';
 

@@ -1,31 +1,24 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { colors } from '../components/theme';
-import { StoreProvider, useStore } from '../data/store';
+import { AuthProvider, useAuth } from '../auth/AuthProvider';
+import { Loading } from '../components/Loading';
 
-function RootStack() {
-  const { loaded } = useStore();
-  if (!loaded) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
+function RootNavigator() {
+  const { user, initializing } = useAuth();
+  if (initializing) return <Loading />;
+
+  // Sem usuário logado, só as telas de (auth) ficam acessíveis; com usuário,
+  // só as de (app). O Expo Router redireciona automaticamente ao trocar.
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.primary },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: '700' },
-        contentStyle: { backgroundColor: colors.background },
-        headerBackButtonDisplayMode: 'minimal',
-      }}
-    >
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={!!user}>
+        <Stack.Screen name="(app)" />
+      </Stack.Protected>
+      <Stack.Protected guard={!user}>
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
     </Stack>
   );
 }
@@ -33,10 +26,10 @@ function RootStack() {
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <StoreProvider>
+      <AuthProvider>
         <StatusBar style="light" />
-        <RootStack />
-      </StoreProvider>
+        <RootNavigator />
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
