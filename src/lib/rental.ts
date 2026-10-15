@@ -1,9 +1,6 @@
 import type { AppData, Contract, Payment, PaymentStatus } from '../data/types';
 import { addMonths } from './format';
-
-export function newId(): string {
-  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-}
+import { newId } from './id';
 
 function daysInMonth(month: string): number {
   const [y, m] = month.split('-').map(Number);

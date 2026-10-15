@@ -1,13 +1,13 @@
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
-import { colors } from '../../components/theme';
-import { Badge, Button, Card, Empty, InfoRow, SectionTitle, styles as ui } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { EXPENSE_CATEGORIES, PROPERTY_TYPES } from '../../data/types';
-import { formatCurrency, formatDate } from '../../lib/format';
-import { goBack } from '../../lib/navigation';
-import { activeContractForProperty } from '../../lib/rental';
+import { colors } from '../../../components/theme';
+import { Badge, Button, Card, Empty, InfoRow, SectionTitle, styles as ui } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { EXPENSE_CATEGORIES, PROPERTY_TYPES } from '../../../data/types';
+import { formatCurrency, formatDate } from '../../../lib/format';
+import { goBack } from '../../../lib/navigation';
+import { activeContractForProperty } from '../../../lib/rental';
 
 export default function PropertyDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();

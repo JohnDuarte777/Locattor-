@@ -2,9 +2,9 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
-import { Badge, Card, Empty, Fab, Select, styles as ui } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { formatCurrency, formatDate } from '../../lib/format';
+import { Badge, Card, Empty, Fab, Select, styles as ui } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { formatCurrency, formatDate } from '../../../lib/format';
 
 type Filter = 'ativos' | 'encerrados';
 

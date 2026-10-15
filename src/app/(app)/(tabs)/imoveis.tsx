@@ -2,11 +2,11 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, Text, TextInput, View } from 'react-native';
 
-import { colors } from '../../components/theme';
-import { Badge, Card, Empty, Fab, styles as ui } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { PROPERTY_TYPES } from '../../data/types';
-import { formatCurrency } from '../../lib/format';
+import { colors } from '../../../components/theme';
+import { Badge, Card, Empty, Fab, styles as ui } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { PROPERTY_TYPES } from '../../../data/types';
+import { formatCurrency } from '../../../lib/format';
 
 export default function PropertiesScreen() {
   const { data } = useStore();

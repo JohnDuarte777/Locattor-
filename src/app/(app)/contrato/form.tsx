@@ -2,11 +2,11 @@ import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Text } from 'react-native';
 
-import { Button, Field, FormScreen, Select, styles as ui } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { currencyInput, formatDate, maskDate, parseCurrency, parseDate, today } from '../../lib/format';
-import { goBack } from '../../lib/navigation';
-import { newId } from '../../lib/rental';
+import { Button, Field, FormScreen, Select, styles as ui } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { currencyInput, formatDate, maskDate, parseCurrency, parseDate, today } from '../../../lib/format';
+import { goBack } from '../../../lib/navigation';
+import { newId } from '../../../lib/id';
 
 export default function ContractForm() {
   const params = useLocalSearchParams<{ id?: string; propertyId?: string; tenantId?: string }>();

@@ -2,11 +2,11 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, Text, TextInput, View } from 'react-native';
 
-import { colors } from '../../components/theme';
-import { Badge, Card, Empty, Fab, styles as ui } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { today } from '../../lib/format';
-import { paymentStatus } from '../../lib/rental';
+import { colors } from '../../../components/theme';
+import { Badge, Card, Empty, Fab, styles as ui } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { today } from '../../../lib/format';
+import { paymentStatus } from '../../../lib/rental';
 
 export default function TenantsScreen() {
   const { data } = useStore();

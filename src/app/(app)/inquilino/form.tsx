@@ -1,11 +1,12 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 
-import { Button, Field, FormScreen } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { maskDocument, maskPhone } from '../../lib/format';
-import { goBack } from '../../lib/navigation';
-import { newId } from '../../lib/rental';
+import { Button, Field, FormScreen } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { maskDocument, maskPhone } from '../../../lib/format';
+import { goBack } from '../../../lib/navigation';
+import { newId } from '../../../lib/id';
+import { isValidEmail } from '../../../lib/validation';
 
 export default function TenantForm() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -22,7 +23,7 @@ export default function TenantForm() {
   const save = () => {
     const e: Record<string, string> = {};
     if (!name.trim()) e.name = 'Informe o nome do inquilino.';
-    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) e.email = 'E-mail inválido.';
+    if (email.trim() && !isValidEmail(email)) e.email = 'E-mail inválido.';
     setErrors(e);
     if (Object.keys(e).length) return;
 

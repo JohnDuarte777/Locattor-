@@ -4,6 +4,7 @@ App para gerenciamento de imóveis de aluguel, para **Android e iOS**, feito com
 
 ## Funcionalidades
 
+- **Login** – criar conta, entrar, sair e recuperar senha. Cada usuário vê apenas os próprios dados.
 - **Imóveis** – cadastro com endereço, tipo, valor de aluguel, quartos, área e observações; situação (alugado/vago).
 - **Inquilinos** – cadastro com CPF/CNPJ, telefone e e-mail; atalhos para ligar, enviar e-mail ou WhatsApp.
 - **Contratos** – vincula imóvel e inquilino, com valor, dia de vencimento, vigência e caução. Pode ser encerrado ou reativado.
@@ -13,9 +14,24 @@ App para gerenciamento de imóveis de aluguel, para **Android e iOS**, feito com
 - **Painel** – previsto x recebido no mês, valores em atraso, saldo, taxa de ocupação e próximos vencimentos.
 - **Financeiro** – navegação mês a mês com resumo, aluguéis e despesas.
 
-Os dados ficam salvos no próprio aparelho (AsyncStorage) e funcionam offline.
+Por enquanto as contas e os dados ficam salvos no próprio aparelho (AsyncStorage) e funcionam offline. A estrutura já está pronta para migrar para um banco online (Supabase/PostgreSQL) — veja [docs/MIGRACAO_BANCO.md](docs/MIGRACAO_BANCO.md).
 
-## Como rodar no celular
+## Instalar no Android (sem computador)
+
+A cada atualização do `main`, o GitHub compila o app automaticamente
+(workflow `.github/workflows/android-apk.yml`) e publica o APK em **Releases**.
+
+1. No celular Android, abra
+   <https://github.com/JohnDuarte777/Locattor-/releases/latest/download/locattor.apk>
+   (ou a página **Releases** do repositório e toque em `locattor.apk`).
+2. Abra o arquivo baixado e toque em **Instalar**. Na primeira vez, o Android pede
+   para **permitir apps desconhecidos** para o navegador — autorize.
+3. Para atualizar, baixe e instale o APK novo por cima; os dados são mantidos.
+
+> APK de testes, assinado com a chave padrão de desenvolvimento. Para publicar na
+> Play Store é preciso gerar uma chave própria (ex.: com EAS Build).
+
+## Como rodar no celular (com computador)
 
 Pré-requisito: [Node.js](https://nodejs.org) 20 ou superior.
 
@@ -45,14 +61,16 @@ npx eas-cli@latest build --platform ios       # requer conta Apple Developer
 ```
 src/
   app/                 # telas (Expo Router: cada arquivo é uma rota)
-    (tabs)/            # abas: Início, Imóveis, Inquilinos, Contratos, Financeiro
-    imovel/            # detalhe e formulário de imóvel
-    inquilino/         # detalhe e formulário de inquilino
-    contrato/          # detalhe e formulário de contrato
-    despesa/           # formulário de despesa
+    (auth)/            # login, cadastro e recuperação de senha
+    (app)/             # telas que exigem login
+      (tabs)/          # abas: Início, Imóveis, Inquilinos, Contratos, Financeiro
+      imovel/ inquilino/ contrato/ despesa/   # detalhes e formulários
+  auth/                # estado de login (AuthProvider) e botão de sair
   components/          # componentes visuais reutilizáveis e tema
-  data/                # tipos e store (estado global + persistência)
+  data/                # tipos, store (estado global) e cálculo de alterações
+  services/            # backend: login e dados (hoje local; trocável por banco online)
   lib/                 # regras de negócio (cobranças), formatação, WhatsApp
+docs/                  # guia de migração e esquema SQL do banco online
 ```
 
 ## Scripts

@@ -1,13 +1,11 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react';
 
 import { currentMonth } from '../lib/format';
 import { syncPayments } from '../lib/rental';
+import { dataRepository, type Collection } from '../services';
+import { diffData } from './diff';
 import { EMPTY_DATA, type AppData } from './types';
 
-const STORAGE_KEY = 'locattor:data:v1';
-
-type Collection = keyof AppData;
 type Item<K extends Collection> = AppData[K][number];
 
 type Action =
@@ -74,6 +72,8 @@ function reducer(state: AppData, action: Action): AppData {
 interface StoreValue {
   data: AppData;
   loaded: boolean;
+  /** Mensagem do último erro ao carregar ou salvar, se houver. */
+  error?: string;
   upsert: <K extends Collection>(collection: K, item: Item<K>) => void;
   remove: (collection: Collection, id: string) => void;
   removeProperty: (id: string) => void;
@@ -83,25 +83,49 @@ interface StoreValue {
 
 const StoreContext = createContext<StoreValue | null>(null);
 
-export function StoreProvider({ children }: { children: ReactNode }) {
+interface State {
+  data: AppData;
+  loaded: boolean;
+  error?: string;
+}
+
+/** Dados do usuário logado. Recrie o provider (via `key`) ao trocar de usuário. */
+export function StoreProvider({ userId, children }: { userId: string; children: ReactNode }) {
   const [state, dispatch] = useReducer(
-    (s: { data: AppData; loaded: boolean }, a: Action) => ({
-      data: reducer(s.data, a),
-      loaded: s.loaded || a.type === 'load',
-    }),
+    (s: State, a: Action | { type: 'error'; message: string }): State =>
+      a.type === 'error'
+        ? { ...s, error: a.message }
+        : { data: reducer(s.data, a), loaded: s.loaded || a.type === 'load', error: s.error },
     { data: EMPTY_DATA, loaded: false },
   );
+  /** Último estado já gravado no repositório, para enviar só as diferenças. */
+  const saved = useRef<AppData>(EMPTY_DATA);
+  /** Se o carregamento falhar, não grava nada para não sobrescrever os dados reais. */
+  const loadFailed = useRef(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY)
-      .then((raw) => dispatch({ type: 'load', data: raw ? JSON.parse(raw) : EMPTY_DATA }))
-      .catch(() => dispatch({ type: 'load', data: EMPTY_DATA }));
-  }, []);
+    dataRepository
+      .load(userId)
+      .then((data) => {
+        saved.current = data;
+        dispatch({ type: 'load', data });
+      })
+      .catch(() => {
+        loadFailed.current = true;
+        dispatch({ type: 'error', message: 'Não foi possível carregar seus dados.' });
+        dispatch({ type: 'load', data: EMPTY_DATA });
+      });
+  }, [userId]);
 
   useEffect(() => {
-    if (!state.loaded) return;
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)).catch(() => {});
-  }, [state.data, state.loaded]);
+    if (!state.loaded || loadFailed.current) return;
+    const changes = diffData(saved.current, state.data);
+    if (changes.length === 0) return;
+    saved.current = state.data;
+    dataRepository
+      .save(userId, state.data, changes)
+      .catch(() => dispatch({ type: 'error', message: 'Não foi possível salvar as últimas alterações.' }));
+  }, [state.data, state.loaded, userId]);
 
   const upsert = useCallback(<K extends Collection>(collection: K, item: Item<K>) => {
     dispatch({ type: 'upsert', collection, item });

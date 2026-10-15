@@ -2,12 +2,12 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Alert, View } from 'react-native';
 
-import { Button, Field, FormScreen, Select } from '../../components/ui';
-import { useStore } from '../../data/store';
-import { EXPENSE_CATEGORIES, type ExpenseCategory } from '../../data/types';
-import { currencyInput, formatDate, maskDate, parseCurrency, parseDate, today } from '../../lib/format';
-import { goBack } from '../../lib/navigation';
-import { newId } from '../../lib/rental';
+import { Button, Field, FormScreen, Select } from '../../../components/ui';
+import { useStore } from '../../../data/store';
+import { EXPENSE_CATEGORIES, type ExpenseCategory } from '../../../data/types';
+import { currencyInput, formatDate, maskDate, parseCurrency, parseDate, today } from '../../../lib/format';
+import { goBack } from '../../../lib/navigation';
+import { newId } from '../../../lib/id';
 
 export default function ExpenseForm() {
   const params = useLocalSearchParams<{ id?: string; propertyId?: string }>();

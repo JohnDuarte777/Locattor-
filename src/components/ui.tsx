@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps, ReactNode } from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -118,16 +119,22 @@ export function Button({
   onPress,
   variant = 'primary',
   icon,
+  loading = false,
 }: {
   title: string;
   onPress: () => void;
   variant?: 'primary' | 'secondary' | 'danger';
   icon?: IconName;
+  /** Mostra um indicador de carregamento e bloqueia novos toques. */
+  loading?: boolean;
 }) {
   const fg = variant === 'primary' ? '#fff' : variant === 'danger' ? colors.danger : colors.primary;
   return (
     <Pressable
       onPress={onPress}
+      disabled={loading}
+      accessibilityRole="button"
+      accessibilityState={{ busy: loading }}
       style={({ pressed }) => [
         styles.button,
         variant === 'primary' && { backgroundColor: colors.primary },
@@ -136,7 +143,11 @@ export function Button({
         pressed && styles.pressed,
       ]}
     >
-      {icon ? <Ionicons name={icon} size={18} color={fg} /> : null}
+      {loading ? (
+        <ActivityIndicator color={fg} />
+      ) : icon ? (
+        <Ionicons name={icon} size={18} color={fg} />
+      ) : null}
       <Text style={[styles.buttonText, { color: fg }]}>{title}</Text>
     </Pressable>
   );
